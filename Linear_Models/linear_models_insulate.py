@@ -13,7 +13,7 @@ Original file is located at
 import pandas as pd
 import statsmodels.formula.api as smf
 
-df1 = pd.read_csv("../Data/insulate_data.txt", sep=r"\s+", header=None, names=["quando", "temp", "cons"])
+df1 = pd.read_csv("Data/insulate_data.txt", sep=r"\s+", header=None, names=["quando", "temp", "cons"])
 
 regr = smf.ols('cons ~ quando + temp', data=df1).fit()
 print(regr.summary())
@@ -43,7 +43,7 @@ import pandas as pd
 import numpy as np
 import statsmodels.formula.api as smf
 
-df = pd.read_csv("../Data/insulate_data.txt", sep=r"\s+", header=None, names=["quando", "temp", "cons"])
+df = pd.read_csv("Data/insulate_data.txt", sep=r"\s+", header=None, names=["quando", "temp", "cons"])
 
 regr = smf.ols('cons ~ quando + temp', data=df).fit()
 

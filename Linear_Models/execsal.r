@@ -6,7 +6,7 @@
 ###############
 
 # reading the data into R
-exec <- read.table("../Data/execsal.txt", header=T)
+exec <- read.table("Data/execsal.txt", header=T)
 str(exec)
 attach(exec)
 

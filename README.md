@@ -13,10 +13,10 @@ This repository contains a collection of statistical scripts in R and Python, or
 
 ## 🛠️ R Environment Setup (Arch Linux)
 
-### 0. Install R
-First, ensure R is installed on your system:
+### 0. Install R and Build Dependencies
+Ensure R and the necessary tools for compiling packages (like `mvtnorm`) are installed:
 ```bash
-sudo pacman -S r
+sudo pacman -S r gcc-fortran make
 ```
 
 ### 1. Install the `renv` Gatekeeper
@@ -26,16 +26,28 @@ If you haven't already, install the `renv` package once. If you don't have write
 R -e "install.packages('renv')"
 ```
 
-### 2. Restore the Project Library
-Once `renv` is installed, run the following command in the project root to install all project-specific dependencies into a local folder (`renv/`). This will **not** touch your system R library.
+### 2. Initialize and Install Dependencies
+Run the following command in the project root to create the local `renv/` infrastructure and install all necessary packages for the scripts. This will **not** touch your system R library.
 
 ```bash
-R -e "renv::restore()"
+Rscript -e "renv::init(); renv::install(c('rmarkdown', 'knitr', 'tidyr', 'dplyr', 'ggplot2', 'R2jags'))"
 ```
 
 ### 3. Usage
 Every time you open R in this folder, the `.Rprofile` will automatically activate the local environment. You will see a message:
 `* Project '~/Work/MathML' loaded. [renv 1.1.8]`
+
+### 4. Running Scripts
+You can run any R script from the terminal. The `.Rprofile` ensures that the project-local dependencies are used:
+
+```bash
+Rscript Probability_Statistics/exercises_basic.r
+```
+
+Or, inside an R session:
+```r
+source("Linear_Models/execsal.r")
+```
 
 ---
 

@@ -39,7 +39,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # Path updated to point to the Data folder relative to this script
-insulate=read.table("../Data/insulate_data.txt",
+insulate=read.table("Data/insulate_data.txt",
                     col.names=c("quando","temp","cons"))
 
 # take a look at the variable in the database
