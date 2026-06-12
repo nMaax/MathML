@@ -14,9 +14,9 @@ This repository contains a collection of statistical scripts in R and Python, or
 ## 🛠️ R Environment Setup (Arch Linux)
 
 ### 0. Install R and Build Dependencies
-Ensure R and the necessary tools for compiling packages (like `mvtnorm`) are installed:
+Ensure R and the necessary tools for compiling packages (like `mvtnorm` and `rjags`) are installed:
 ```bash
-sudo pacman -S r gcc-fortran make
+sudo pacman -S r gcc-fortran make jags
 ```
 
 ### 1. Install the `renv` Gatekeeper
