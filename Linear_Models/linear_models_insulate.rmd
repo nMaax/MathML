@@ -1,0 +1,202 @@
+---
+title: Linear Models in R, the insulate case study
+author: 
+ - Mauro Gasparini^[Politecnico di Torino, mauro.gasparini@polito.it]
+date: "MSM, April 1, 2026"
+output: pdf_document
+description: R markdown script to build a linear model
+---
+
+## R Markdown as notebook
+
+R Markdown file ```*.rmd``` are notebook style readable into Rstudio,
+producing ```*.pdf``` files like this one when processed using ```knit```.
+
+## The insulate case study
+
+The insulate database contains data about fuel consumption to
+heat a certain building. Assume (a big assumption!) that
+we have two random samples of weeks, before (26 weeks) and after (30 weeks)
+some insulating work was done on the building:
+in these days we recorded:
+
+* quando: an indicator for before/after
+* Temp = average weekly external temperature in Celsius 
+* Cons: fuel consuption (in ft^3). 
+
+We want to study a linear model explaining Cons as a function
+of quando and Temp.
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# No need for hardcoded setwd() if we use relative paths from the script location
+# setwd("../Data") 
+```
+
+## Importing the data from a file and exploring it
+
+```{r}
+# Path updated to point to the Data folder relative to this script
+insulate=read.table("../Data/insulate_data.txt",
+                    col.names=c("quando","temp","cons"))
+
+# take a look at the variable in the database
+str(insulate)        # notice quando is a factor with two levels
+
+# focus on this data frame
+attach(insulate)
+
+# Negative relationship between temp and cons
+plot(temp,cons) 
+
+# Visualizing insulation as well, with some prettyfication
+plot(temp,cons,type="n")
+points(temp[quando=="prima"],cons[quando=="prima"],pch=1)
+points(temp[quando=="dopo"],cons[quando=="dopo"],pch=2,col=2)
+title("With and without insulation")
+```
+
+## Linear models
+
+Linear model with one quantitative and one binary predictor.
+Each predictor appear to be necessary when the other is there,
+since all p-values are close to zero.
+The all-or-nothing (ANOVA) test is also significant.
+
+```{r}
+regr=lm(cons~quando+temp)  ### notice nonalgebraic use of symbol +
+summary(regr)
+```
+
+Here are confidence intervals for the regression coefficients
+```{r}
+confint(regr, level=0.95)
+```
+
+Now take a look at residuals
+```{r}
+res=regr$resid
+plot(temp,res) # no obvious pattern appears, ok
+hist(res)
+```
+
+Redo it all together.
+```{r}
+plot(temp,cons,type="n", xlab="temperatura", ylab="consumo")
+points(temp[quando=="prima"],cons[quando=="prima"],pch=16, col=1)
+points(temp[quando=="dopo"], cons[quando=="dopo"], pch=17, col=2)
+title("With and without insulation, additive model (parallel lines)")
+# Draw the two separate fitted regression lines
+abline(a=regr$coef[1]+regr$coef[2], b=regr$coef[3], lwd=2)
+abline(a=regr$coef[1], b=regr$coef[3], col=2, lwd=2)
+```
+
+
+We now fit a model with interaction between the quantitative and the binary predictor,
+i.e. a non-additive model.
+
+```{r}
+regr2=lm(cons~quando+temp+quando*temp)  ### notice the use of *
+summary(regr2)
+confint(regr2, level=0.95)
+```
+
+Do a similar analysis for the model with interaction
+
+```{r}
+res2=regr2$resid
+plot(temp,res2) # residuals are still ok
+
+plot(temp,cons,type="n", xlab="temperatura", ylab="consumo")
+points(temp[quando=="prima"],cons[quando=="prima"],pch=16, col=1)
+points(temp[quando=="dopo"], cons[quando=="dopo"], pch=17, col=2)
+title("With and without insulation, model with interaction")
+abline(a=regr2$coef[1]+regr2$coef[2], b=regr2$coef[3]+regr2$coef[4], lwd=2)
+abline(a=regr2$coef[1], b=regr2$coef[3], col=2, lwd=2)
+```
+
+## Several F tests
+
+```{r}
+nullo <- lm(cons~1)
+solotemp <- lm(cons~temp)
+additivo <- lm(cons~temp+quando)
+interattivo <- lm(cons~temp*quando)
+
+# null vs interattivo
+anova(nullo, interattivo) 
+summary(interattivo) # same as all-or-nothing test in summary(interattivo)
+
+# additivo vs interattivo
+anova(additivo, interattivo) 
+summary(interattivo)# same as interaction test in default view
+
+# solotemp vs interattivo
+anova(solotemp, interattivo) # nested models
+
+## detach the database when you do not use it any more
+detach(insulate)
+```
+
+## Confidence and Prediction intervals
+
+
+```{r}
+predict.lm(additivo,
+           newdata=data.frame(quando=c("prima","dopo"),temp=rep(3.2,2)),
+           interval="confidence",
+	   level=.99)
+
+predict.lm(additivo,
+           newdata=data.frame(quando=c("prima","dopo"),temp=rep(3.2,2)),
+           interval="prediction",
+	   level=.99)
+```
+
+
+## Cool plots of confidence and prediction bands
+
+More modern R coding style: using tibbles instead of data frames,
+using library dplyr for data manipulation and using ggplot for cool plots.
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+# build x grid
+dopo_insulate <-
+  insulate %>%
+  dplyr::filter(quando == "dopo") %>%
+  dplyr::select(-quando)
+
+# fit a simple model
+dopo_simple_lm <- lm(cons ~ temp, data = dopo_insulate)
+
+# build a vector of new data spanning the whole temp support
+new_x <- tibble(temp = seq(min(dopo_insulate$temp), max(dopo_insulate$temp), by = 0.05))
+
+# find confidence and prediction intervals for all of the range elements
+# and change the column names to make them distinguishable
+new_pred <- predict(dopo_simple_lm, newdata = new_x, interval = "prediction") %>%
+  as_tibble() %>%
+  rename_with(~ paste(.x, "pred", sep = "_")) #
+new_conf <- predict(dopo_simple_lm, newdata = new_x, interval = "confidence") %>%
+  as_tibble() %>%
+  rename_with(~ paste(.x, "conf", sep = "_"))
+
+# join the two interval details
+new_data <- bind_cols(new_x, new_pred, new_conf)
+
+ggplot() +
+  geom_point(aes(temp, cons), data = dopo_insulate) + # scatter plot
+  geom_line(aes(temp, fit_conf), data = new_data) + # regression line
+  geom_ribbon(aes(temp, ymin = lwr_pred, ymax = upr_pred, fill = "prediction"),
+    data = new_data, alpha = .5
+  ) + # pred intervals
+  geom_ribbon(aes(temp, ymin = lwr_conf, ymax = upr_conf, fill = "confidence"),
+    data = new_data, alpha = .5
+  ) # conf intervals
+
+```

@@ -1,5 +1,8 @@
-# Exercise 1
-# Assume a poll size of 10 people, where the probability of any single person voting for Party A is 0.4.
+###############################################################################
+# Exercise 1: Binomial Distribution Basics
+###############################################################################
+# Assume a poll size of 10 people, where the probability of any single person 
+# voting for Party A is 0.4.
 #   1. Calculate the probability that Party A gets exactly 5 votes (NA=5)
 #   2. Calculate the "grouped" probability that Party A gets 6 or more votes (NA≥6)
 
@@ -38,7 +41,9 @@ print(paste("Probability of 6 or more votes (Method B):", grouped_prob_cum))
 
 # ------------
 
-# Exercise 2
+###############################################################################
+# Exercise 2: Multinomial Simulation and Covariance
+###############################################################################
 # Imagine rolling a fair 6-sided die 10 times. (π=1/6 for all faces).
 #   1. Simulate this 10-roll experiment 10,000 times to create a large dataset of outcomes
 #   2. Extract the vector of counts for rolling a "1" (X1) and the vector of counts for rolling a "2" (X2)
@@ -73,7 +78,9 @@ print(paste("Theoretical Covariance:      ", theoretical_cov))
 
 # ------------
 
-# Exercise 3
+###############################################################################
+# Exercise 3: Exponential Distribution and Numerical Integration
+###############################################################################
 # By the laws of probability, the total area under any valid probability density curve from 0 to ∞ must equal 1.
 #     1. Let λ=2. Define the probability density function of the exponential distribution in R.
 #     2. Use R's built-in numerical integration tool to integrate your function from 0 to ∞ (infinity) and verify that the result evaluates to exactly 1.
@@ -102,7 +109,9 @@ print(area_result)
 
 # ------------
 
-# Exercise 4
+###############################################################################
+# Exercise 4: Chi-Square Goodness of Fit (Die Test)
+###############################################################################
 # You suspect a 6-sided die might be loaded. To test this, you roll it 60 times and record the following frequencies for faces 1 through 6:
 #
 # > Observed Counts: Face 1: 7, Face 2: 14, Face 3: 8, Face 4: 15, Face 5: 6, Face 6: 10.
@@ -135,7 +144,9 @@ print(result$expected) # p-value 0.22
 
 # ------------
 
-# Exercise 5
+###############################################################################
+# Exercise 5: Hardy-Weinberg Equilibrium Test
+###############################################################################
 #
 # A population with a certain gene with three alleles A, B, C with allele frequencies 0.1, 0.6 and 0.3 respectively 
 # is in Hardy-Weinberg equilibrium if its genotype frequencies equal:
@@ -164,8 +175,10 @@ print("Degrees of freedom")
 print(length(observed_counts)-1)
 
 # ------------
-# 
-# Exercise 6
+
+###############################################################################
+# Exercise 6: Health Habits - Independence Testing
+###############################################################################
 #
 # Explore the “Health Habits” example of independence testing, i.e., find out if there is a resonable relation between smoking and exercising frequently
 #

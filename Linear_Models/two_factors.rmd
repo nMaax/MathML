@@ -1,0 +1,137 @@
+---
+title: Two qualitative predictors
+date: "MML, April 21, 2026"
+author: Mauro Gasparini^[Politecnico di Torino, mauro.gasparini@polito.it]
+output: pdf_document
+---
+
+This is a pdf file "260421 Two factors.pdf"
+produced by the "269421 Two factors.rmd" file when "knit" within R,
+according to the notebook style of R Markdown.
+
+## Two factors: a linear model with two qualitative predictors
+
+We recycle a textbook example taken from
+McClave JT., Benson PG. e Sincich T. (2014). 
+*Statistics for Business and Economics.* 
+Pearson Education Limited.   
+We want to study the effect on the response (variable *distance*)
+of 4 different brands of golf ball (A,B,C,D) (variable *brand*)
+and the club  type (DRIVER/IRON) (variable *club*).
+These two features are qualitative predictors, also called factors.
+A robot player is used.
+
+Let's build the data in *wide* format, i.e. enter the data online.
+The data shows 4 replications for each pair of brand and club)
+
+```{r}
+golfwide <- read.table(header=T, text='
+club    A       B       C     D
+DRIVER 	226.4	238.3	240.5	219.8
+DRIVER 	232.6	231.7	246.9	228.7
+DRIVER 	234.0 227.7	240.3	232.9
+DRIVER	220.7	237.2	244.7	237.6
+IRON   	163.8	184.4	179.0	157.8
+IRON   	179.4	180.6	168.0	161.8
+IRON   	168.6	179.5	165.2	162.1
+IRON   	173.4	186.2	156.5	160.3
+')
+```
+
+To tranform from wide format to long format,
+we use the library *tidyr()*.
+
+```{r}
+# No need to keep install.packages() in the script once it's in your lockfile!
+library(tidyr)
+golflong <- gather(golfwide, brand, distance, A:D) 
+golflong
+```
+
+Let us also use the old-fashioned attach/detach dynamics
+and study first the effect of **brand** only
+(a linear model with one factor only)
+
+```{r}
+attach(golflong)
+summary(lm(distance ~ brand))
+anova(lm(distance ~ brand))
+model.matrix(lm(distance~brand)) ### this is the design matrix
+```
+
+To visualize dta, we can use boxplots or more specialized graphics
+for qualitative predictors (for the latter, 
+we have to define the predictors explicitely as factor objects in R).
+Recall that prettier graphics can always be produced using *ggplot2()*.
+
+```{r}
+boxplot(distance ~ brand) 
+brand <- as.factor(brand)  
+club <- as.factor(club)
+plot.design(distance ~ brand)
+```
+
+## Additive and non-additive models
+
+Now let us add the second factor *club* and build a 'small'
+additive model ...
+
+```{r}
+plot.design(distance ~ brand  + club)
+small <- lm(distance ~ brand  + club)
+summary(small)
+anova(small)
+model.matrix(small)
+```
+
+... and a larger model with interaction.
+An interaction plot suggests interactions may be significant,
+but we have to test for it since interaction plots are
+subject to sampling variation.
+
+```{r}
+#plot.design(distance ~ brand*club)
+interaction.plot(brand, club, distance)
+large <- lm(distance ~ brand*club)
+summary(large)
+model.matrix(large)
+anova(large)
+```
+
+With the last *anova()* command we have build a more
+traditional anova table.
+We can compare the two models also with the *anova* command.
+
+```{r}
+anova(small, large)
+```
+
+Interactions are significant, meaning each combination of the two factors
+tells a different story.
+
+```{r}
+fitted(large)
+```
+
+
+## Fitted and predicted value, with confidence and prediction intervals
+
+The following code is an application of the concepts of fitted values,
+confidence intervals, predictive intervals.
+
+
+```{r}
+predict.lm(large, newdata=data.frame(brand="A",club="DRIVER"))
+
+predict.lm(large, newdata=data.frame(brand="A",club="DRIVER"),
+           interval="confidence",
+           level=.99)
+
+predict.lm(large, newdata=data.frame(brand="A",club="DRIVER"),
+           interval="prediction",
+           level=.99)
+
+detach(golflong)
+```
+
+

@@ -1,0 +1,72 @@
+---
+title: 'Using JAGS within R: visiting classic BUGS Examples'
+output: pdf_document
+date: 'May 28, 2025'
+author: 'Mauro Gasparini'
+---
+
+A lot of different software exists to approximate posterior distributions
+in complex and hierarchical Bayesian models using MCMC
+(Markov Chain Monte Carlo) simulation. 
+In this note we focus on JAGS, which can be considered
+one of the mature implementations of several BUGS versions
+developed in the last 30 years.
+JAGS will be invoked within R, which is a universally known
+software environment for statistical analysis. The R2jags library
+will serve the purpose. 
+There exists an analogous interface Python to JAGS called PyJAGS.
+
+The reason to focus on JAGS and BUGS is that there are many "classic BUGS"
+examples  which give an overview of several different (bio)statistical problems
+and applications. In addition, there are also several books
+focusing on different applications of BUGS, not necessarily bio.
+
+Download and install JAGS from
+
+https://sourceforge.net/projects/mcmc-jags/files/latest/download
+
+Download the JAGS version of the Classic Bugs files from
+
+https://sourceforge.net/projects/mcmc-jags/files/Examples/4.x/classic-bugs.tar.gz/download
+
+and install them in your favorite directory (YFD).
+
+Then get into Rstudio and install, one for all, the relevant package to run JAGS from within R:
+
+```{r}
+# No need to keep install.packages() in the script once it's in your lockfile!
+library(R2jags)   
+```
+For illustration, we run the first example, called RATS, in the first Volume
+of classic BUGS examples. 
+
+**Note on Missing Data:** To run the following code, you must have the `classic-bugs` 
+directory structure mentioned above. Currently, these files (`test1.R`, data, and models) 
+are not included in this repository. 
+
+```{r, eval=FALSE}
+# Update the path below to your local JAGS examples directory
+# setwd("path/to/your/classic-bugs/vol1/rats")
+# source("test1.R")
+```
+
+If you had run the simulation, the output object `x` would be available for exploration:
+```{r, eval=FALSE}
+# plot(x)
+# summary(x)
+```
+
+
+You will find a nice description of the dataset and the Bayesian model
+in the .pdf file WinBUGS_Vol1.pdf.
+
+Many more examples are in the three volumes, and even more complete descriptions
+of the examples are contained in the following book, which also contains
+some theory and extensive practical suggestions.
+
+*The BUGS Book: A Practical Introduction to Bayesian Analysis* (2013).
+by David Lunn, Chris Jackson, Nicky Best, Andrew Thomas, David Spiegelhalter.
+Chapman & Hall.
+
+
+

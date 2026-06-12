@@ -1,0 +1,14 @@
+[project]
+name = "mathml"
+version = "0.1.0"
+description = "Mathematical and Statistical Learning examples"
+dependencies = [
+    "pandas",
+    "statsmodels",
+    "numpy",
+    "matplotlib",
+    "scipy",
+]
+
+[tool.uv]
+managed = true
